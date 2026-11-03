@@ -14,8 +14,12 @@ app.get('/', (req, res) => {
 
 app.use('/usuario', usuarioRoute);
 
-const PORT = 3000;
+const PORT = Number(process.env.PORT || 3000);
 
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en puerto http://localhost:${PORT}`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Servidor corriendo en puerto http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
