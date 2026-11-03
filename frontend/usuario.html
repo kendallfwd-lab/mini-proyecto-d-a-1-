@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi cuenta | ConstruccionBE</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    .user-page { max-width: 1180px; margin: 0 auto; padding: 32px 0 64px; }
+    .user-hero { display: flex; align-items: center; gap: 18px; background: linear-gradient(135deg, #312e81, #4f46e5); color: #fff; border: 0; }
+    .user-hero h1, .user-hero p { margin: 0; }
+    .user-hero p { color: #e0e7ff; margin-top: 6px; }
+    .avatar { display: grid; place-items: center; width: 76px; height: 76px; border-radius: 50%; background: #fff; color: #3730a3; font-size: 1.6rem; font-weight: 850; }
+    .user-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .user-badge { border: 1px solid #ffffff66; border-radius: 999px; padding: 4px 10px; font-size: .8rem; }
+    .user-info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .user-info-grid .card { display: grid; gap: 8px; min-height: 100px; }
+    .user-info-grid strong { overflow-wrap: anywhere; }
+    .user-page .projects-list { max-height: 360px; overflow: auto; border: 1px solid #edf0f6; border-radius: 12px; }
+    .user-page .projects-list td:nth-child(2) { min-width: 190px; font-weight: 700; }
+    .user-page .projects-list td:nth-child(3) { min-width: 280px; color: #697386; }
+    .user-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    @media (max-width: 760px) { .user-info-grid { grid-template-columns: repeat(2, 1fr); } .user-hero { align-items: flex-start; flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <main class="user-page">
+    <header class="topbar">
+      <div><p class="eyebrow">Área personal</p><h1>Mi cuenta</h1></div>
+      <div class="user-actions"><a class="button-link secondary" href="./" id="admin-link">Panel principal</a><button id="logout-button" class="secondary" type="button">Cerrar sesión</button></div>
+    </header>
+    <p id="message" class="message" role="alert"></p>
+
+    <section class="card user-hero">
+      <div id="avatar" class="avatar">U</div>
+      <div><h1 id="full-name">Usuario</h1><p id="email">correo</p><div class="user-badges"><span id="role" class="user-badge">usuario</span><span id="user-id" class="user-badge">ID: -</span></div></div>
+    </section>
+
+    <section class="user-info-grid" aria-label="Mi información">
+      <article class="card"><span class="stat-label">Nombre completo</span><strong id="info-name">-</strong></article>
+      <article class="card"><span class="stat-label">Correo</span><strong id="info-email">-</strong></article>
+      <article class="card"><span class="stat-label">Altura</span><strong id="info-height">-</strong></article>
+      <article class="card"><span class="stat-label">Etnia</span><strong id="info-ethnicity">-</strong></article>
+    </section>
+
+    <section class="card projects-card">
+      <div class="section-heading"><div><h2>Mis proyectos</h2><p class="muted">Consulta y registra tus proyectos.</p></div><button id="refresh-projects" class="secondary" type="button">Actualizar</button></div>
+      <form id="project-form" class="form-grid"><label>Nombre<input name="nombre" required /></label><label>Estado<select name="estado"><option value="planificado">Planificado</option><option value="en_progreso">En progreso</option><option value="finalizado">Finalizado</option></select></label><label class="wide">Descripción<textarea name="descripcion" rows="3"></textarea></label><button class="wide" type="submit">Crear proyecto</button></form>
+      <div class="projects-list"><table><thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Estado</th></tr></thead><tbody id="projects-body"></tbody></table></div>
+    </section>
+  </main>
+  <script src="./usuario.js" type="module"></script>
+</body>
+</html>

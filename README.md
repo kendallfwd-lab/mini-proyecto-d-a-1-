@@ -30,6 +30,18 @@ npx sequelize-cli db:migrate:status
 npx sequelize-cli db:migrate
 ```
 
+Para cargar usuarios de ejemplo sin duplicarlos:
+
+```bash
+npm run db:seed
+```
+
+Los usuarios de ejemplo usan la contraseña `secreto123`. Para deshacer únicamente ese seeder:
+
+```bash
+npm run db:seed:undo
+```
+
 Para deshacer la última migración:
 
 ```bash
@@ -43,7 +55,9 @@ npm start
 npm test
 ```
 
-La API queda disponible en `http://localhost:3000`.
+La API queda disponible en `http://localhost:3010`.
+
+El panel frontend está disponible en `http://localhost:3010/app/`.
 
 Endpoints principales:
 
@@ -52,6 +66,39 @@ Endpoints principales:
 - `POST /usuario`
 - `PATCH /usuario/:id`
 - `DELETE /usuario/:id`
+- `POST /auth/login`
+
+Las consultas `GET /usuario` y `GET /usuario/:id` son públicas y no requieren token. Las operaciones `PATCH` y `DELETE` requieren `Authorization: Bearer <token>`. El registro `POST /usuario` y el login son públicos.
+
+La lista de usuarios admite filtros y paginación:
+
+```text
+GET /usuario?etnia=Mestiza&nombre=Ana&page=1&limit=10
+```
+
+La respuesta contiene `datos` y `paginacion`. Los roles disponibles son `admin` y `usuario`; únicamente `admin` puede eliminar usuarios. La documentación interactiva está disponible en:
+
+```text
+http://localhost:3010/api-docs
+```
+
+También existe la tabla `proyectos`:
+
+```text
+GET  /proyecto
+POST /proyecto
+```
+
+La consulta `GET /proyecto` es pública. Para crear proyectos con `POST /proyecto` se requiere JWT; el proyecto queda asociado a la cuenta autenticada.
+
+Para iniciar sesión:
+
+```json
+{
+  "correo": "ana@example.com",
+  "contrasena": "secreto123"
+}
+```
 
 Ejemplo de cuerpo para `POST /usuario` en Postman:
 

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ConstruccionBE | Panel</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    .projects-card { min-height: 430px; }
+    .projects-list { margin-top: 28px; max-height: 330px; overflow: auto; border: 1px solid #edf0f6; border-radius: 12px; }
+    .projects-list td:nth-child(2) { min-width: 190px; font-weight: 700; }
+    .projects-list td:nth-child(3) { min-width: 280px; color: #697386; }
+    .projects-list .status { display: inline-block; border-radius: 999px; padding: 4px 10px; font-size: .8rem; font-weight: 700; text-transform: capitalize; background: #e0e7ff; color: #3730a3; }
+    .projects-list .status-en_progreso { background: #fef3c7; color: #92400e; }
+    .projects-list .status-finalizado { background: #dcfce7; color: #166534; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+    .stat-card, .stat-action { border: 1px solid #e5e9f2; border-radius: 14px; background: #fff; padding: 18px; box-shadow: 0 8px 22px #26365d0a; }
+    .stat-card { display: grid; gap: 6px; }
+    .stat-label { color: #697386; font-size: .85rem; font-weight: 650; }
+    .stat-card strong { color: #3730a3; font-size: 1.8rem; }
+    .stat-action { color: #fff; background: #4f46e5; font: inherit; font-weight: 750; cursor: pointer; }
+    .profile-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 18px; background: linear-gradient(135deg, #312e81, #4f46e5); color: #fff; border: 0; }
+    .profile-avatar { display: grid; place-items: center; width: 72px; height: 72px; border-radius: 50%; background: #fff; color: #3730a3; font-size: 1.5rem; font-weight: 850; }
+    .profile-card h2, .profile-card p { margin: 0; }
+    .profile-card p { color: #e0e7ff; margin-top: 4px; }
+    .profile-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .profile-badge { border: 1px solid #ffffff55; border-radius: 999px; padding: 4px 10px; color: #fff; font-size: .8rem; }
+    .profile-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .profile-actions button { background: #fff; color: #3730a3; }
+    .personal-hero { display: flex; align-items: center; gap: 18px; background: linear-gradient(135deg, #312e81, #4f46e5); color: #fff; border: 0; }
+    .personal-hero h2 { margin: 0; }
+    .personal-hero .muted { color: #e0e7ff; }
+    .user-info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+    .info-card { display: grid; gap: 8px; min-height: 100px; }
+    .info-card strong { overflow-wrap: anywhere; }
+    @media (max-width: 760px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 760px) { .profile-card { grid-template-columns: auto 1fr; } .profile-actions { grid-column: 1 / -1; justify-content: flex-start; } .user-info-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section id="auth-view" class="auth-grid">
+      <div class="hero"><p class="eyebrow">ConstruccionBE</p><h1>Gestiona tu API desde un panel sencillo.</h1><p>Inicia sesión para administrar usuarios y proyectos.</p></div>
+      <div class="card">
+        <h2>Iniciar sesión</h2>
+        <form id="login-form">
+          <label>Correo<input name="correo" type="email" required autocomplete="email" /></label>
+          <label>Contraseña<input name="contrasena" type="password" required autocomplete="current-password" /></label>
+          <button type="submit">Entrar</button>
+        </form>
+        <p id="login-message" class="message" role="alert"></p>
+      </div>
+    </section>
+
+    <section id="app-view" class="hidden">
+      <header class="topbar"><div><p class="eyebrow">Panel de control</p><h1>Usuarios y proyectos</h1></div><div class="session"><span id="session-user"></span><button id="logout-button" class="secondary">Cerrar sesión</button></div></header>
+      <p id="app-message" class="message" role="alert"></p>
+      <section class="stats-grid" aria-label="Resumen">
+        <article class="stat-card"><span class="stat-label">Usuarios registrados</span><strong id="total-users">0</strong></article>
+        <article class="stat-card"><span class="stat-label">Usuarios visibles</span><strong id="visible-users">0</strong></article>
+        <article class="stat-card"><span class="stat-label">Proyectos</span><strong id="total-projects">0</strong></article>
+        <button id="focus-register" class="stat-action" type="button">+ Agregar persona</button>
+      </section>
+      <section class="card profile-card" aria-label="Perfil del usuario">
+        <div id="profile-avatar" class="profile-avatar">U</div>
+        <div><h2 id="profile-name">Usuario</h2><p id="profile-email">correo</p><div class="profile-meta"><span id="profile-role" class="profile-badge">usuario</span><span id="profile-id" class="profile-badge">ID: -</span></div></div>
+        <div class="profile-actions"><button id="profile-edit" type="button">Editar perfil</button><button id="profile-password" type="button">Cambiar contraseña</button></div>
+      </section>
+
+      <div class="grid two-columns">
+        <section id="register-user-card" class="card"><div class="section-heading"><div><h2>Registrar usuario</h2><p class="muted">Agrega otra persona a la base de datos.</p></div><button type="button" id="clear-register" class="secondary">Limpiar</button></div><form id="register-form" class="form-grid">
+          <label>Nombre<input name="nombre" required /></label><label>Primer apellido<input name="apellido1" required /></label><label>Segundo apellido<input name="apellido2" required /></label><label>Altura (m)<input name="altura" type="number" min="0.3" max="3" step="0.01" required /></label><label>Etnia<input name="etnia" required /></label><label>Correo<input name="correo" type="email" required /></label><label>Contraseña<input name="contrasena" type="password" minlength="8" required /></label><button type="submit">Crear usuario</button>
+        </form></section>
+        <section class="card"><h2>Cambiar contraseña</h2><form id="password-form" class="form-grid"><label>ID de usuario<input name="id" type="number" required /></label><label>Contraseña actual<input name="contrasenaActual" type="password" required /></label><label>Nueva contraseña<input name="nuevaContrasena" type="password" minlength="8" required /></label><button type="submit">Actualizar contraseña</button></form></section>
+      </div>
+
+      <section class="card"><div class="section-heading"><div><h2>Usuarios</h2><p class="muted">Filtra, edita o elimina registros.</p></div><form id="filter-form" class="filters"><input name="nombre" placeholder="Nombre" /><input name="etnia" placeholder="Etnia" /><input name="limit" type="number" min="1" max="100" value="10" /><button type="submit">Buscar</button></form></div><div class="table-wrap"><table><thead><tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Acciones</th></tr></thead><tbody id="users-body"></tbody></table></div><div class="pagination"><button id="previous-page" class="secondary">Anterior</button><span id="page-label"></span><button id="next-page" class="secondary">Siguiente</button></div></section>
+
+      <section class="card projects-card"><div class="section-heading"><div><h2>Proyectos</h2><p class="muted">Consulta proyectos y crea uno asociado a tu cuenta.</p></div><button id="refresh-projects" class="secondary" type="button">Actualizar</button></div><form id="project-form" class="form-grid project-form"><label>Nombre<input name="nombre" required /></label><label>Estado<select name="estado"><option value="planificado">Planificado</option><option value="en_progreso">En progreso</option><option value="finalizado">Finalizado</option></select></label><label class="wide">Descripción<textarea name="descripcion" rows="3"></textarea></label><button class="wide" type="submit">Crear proyecto</button></form><div class="projects-list" aria-live="polite"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Propietario</th></tr></thead><tbody id="projects-body"></tbody></table></div></div></section>
+    </section>
+
+    <section id="user-view" class="hidden user-view">
+      <header class="topbar"><div><p class="eyebrow">Área personal</p><h1>Mi cuenta</h1></div><button id="user-logout" class="secondary" type="button">Cerrar sesión</button></header>
+      <section class="card personal-hero"><div id="user-avatar" class="profile-avatar">U</div><div><h2 id="user-name">Usuario</h2><p id="user-email" class="muted">correo</p><div class="profile-meta"><span id="user-role" class="profile-badge">usuario</span><span id="user-id" class="profile-badge">ID: -</span></div></div></section>
+      <div class="user-info-grid">
+        <article class="card info-card"><span class="stat-label">Nombre completo</span><strong id="user-full-name">-</strong></article>
+        <article class="card info-card"><span class="stat-label">Correo electrónico</span><strong id="user-visible-email">-</strong></article>
+        <article class="card info-card"><span class="stat-label">Altura</span><strong id="user-height">-</strong></article>
+        <article class="card info-card"><span class="stat-label">Etnia</span><strong id="user-ethnicity">-</strong></article>
+      </div>
+      <section class="card projects-card"><div class="section-heading"><div><h2>Proyectos disponibles</h2><p class="muted">Consulta la información de los proyectos.</p></div><button id="user-refresh-projects" class="secondary" type="button">Actualizar</button></div><div class="projects-list"><div class="table-wrap"><table><thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Propietario</th></tr></thead><tbody id="user-projects-body"></tbody></table></div></div></section>
+    </section>
+  </main>
+  <dialog id="edit-dialog"><form id="edit-form" method="dialog" class="card"><button type="button" id="close-dialog" class="close">×</button><h2>Editar usuario</h2><input type="hidden" name="id" /><label>Nombre<input name="nombre" required /></label><label>Primer apellido<input name="apellido1" required /></label><label>Segundo apellido<input name="apellido2" required /></label><label>Altura<input name="altura" type="number" min="0.3" max="3" step="0.01" required /></label><label>Etnia<input name="etnia" required /></label><label>Correo<input name="correo" type="email" required /></label><button type="submit">Guardar cambios</button></form></dialog>
+  <script src="./app.js" type="module"></script>
+</body>
+</html>

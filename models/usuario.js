@@ -3,7 +3,12 @@ const bcrypt = require('bcryptjs');
 
 module.exports = (sequelize, DataTypes) => {
   class Usuario extends Model {
+    async compararContrasena(contrasena) {
+      return bcrypt.compare(contrasena, this.contrasena);
+    }
+
     static associate(models) {
+      Usuario.hasMany(models.Proyecto, { foreignKey: 'usuarioId', as: 'proyectos' });
       // Las asociaciones se agregarán aquí cuando existan otros modelos.
     }
   }
@@ -53,6 +58,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: { notEmpty: true, len: [8, 255] },
+      },
+      rol: {
+        type: DataTypes.ENUM('admin', 'usuario'),
+        allowNull: false,
+        defaultValue: 'usuario',
       },
     },
     {

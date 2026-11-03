@@ -5,23 +5,41 @@
   "scripts": {
     "test": "jest --runInBand",
     "start": "node app.js",
-    "dev": "node --watch app.js"
+    "dev": "node --watch app.js",
+    "db:migrate": "sequelize-cli db:migrate",
+    "db:seed": "sequelize-cli db:seed:all",
+    "db:seed:undo": "sequelize-cli db:seed:undo"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "API REST construida con Node.js, Express, MySQL y Sequelize.",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.22.3",
-    "sequelize": "^6.37.8"
+    "sequelize": "^6.37.8",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "jest": "^29.7.0",
     "sequelize-cli": "^6.6.5",
     "supertest": "^7.1.4"
-  }
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kendallfwd-lab/pagina-con-backend.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kendallfwd-lab/pagina-con-backend/issues"
+  },
+  "homepage": "https://github.com/kendallfwd-lab/pagina-con-backend#readme"
 }
