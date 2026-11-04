@@ -1,5 +1,6 @@
 node_modules/
 .env
-npm-debug.log*
+dist/
 coverage/
-server-test*.log
+*.log
+.DS_Store

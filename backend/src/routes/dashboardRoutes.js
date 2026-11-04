@@ -1,0 +1,1 @@
+const router = require('express').Router(); const c = require('../controllers/dashboardController'); router.get('/resumen', c.summary); router.get('/analiticas', c.analytics); module.exports = router;
