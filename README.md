@@ -1,29 +1,49 @@
-# Business Inventory Manager
+# Drop_Zone CR — Business Inventory Manager
 
-Sistema empresarial full stack para administrar productos, categorías y proveedores con MySQL 8.0, Express y React/Vite.
+Sistema full stack para administrar el inventario de Drop_Zone CR con MySQL, Express y React/Vite.
 
 ## Inicio rápido
 
 ```powershell
 npm run install:all
 Copy-Item backend/.env.example backend/.env
-# editar backend/.env con las credenciales de MySQL
+# Editar backend/.env con las credenciales de MySQL
 npm run dev:backend
-# en otra terminal
+# En otra terminal
 npm run dev:frontend
 ```
 
-Antes de arrancar la API, ejecutar en MySQL Workbench los archivos de `database/` en orden. `03_seed.sql` agrega datos demo idempotentes, `05_imagenes_productos.sql` relaciona los productos con imágenes y `06_drop_zone_catalogo.sql` aplica la marca, categorías, proveedores y catálogo de Drop_Zone CR. La API queda en `http://localhost:3010` y Vite en `http://localhost:5173`.
+Ejecuta en MySQL Workbench los archivos de `database/` en orden. El archivo `06_drop_zone_catalogo.sql` carga el catálogo y precios de Drop_Zone CR. El archivo `07_analiticas_inventario.sql` agrega movimientos, ventas y datos históricos para el panel.
+
+- API: `http://localhost:3010`
+- Frontend: `http://localhost:5173`
+- Analíticas: `GET /api/dashboard/analiticas`
 
 ## Estructura
 
-- `backend/src`: API Express, modelos SQL, validadores y controladores.
-- `frontend/src`: panel React con resumen, productos, categorías y proveedores.
-- `database`: creación, esquema, seed y consultas de verificación.
-- `docs`: justificación, modelo ER, endpoints y pruebas.
+```text
+backend/
+  src/
+    config/       conexión a MySQL
+    controllers/  lógica de cada recurso
+    models/       consultas SQL
+    routes/       endpoints HTTP
+    validators/   validaciones y pruebas
+frontend/
+  src/
+    components/   componentes reutilizables
+    pages/        pantallas del panel
+    services/     cliente centralizado de la API
+  public/         logo e imágenes del catálogo
+database/         esquema, catálogo, seed y analíticas
+docs/             documentación del proyecto
+```
 
 ## Comandos
 
-`npm test` ejecuta las pruebas backend · `npm run build` valida el build frontend · `GET /api/health` comprueba la API.
+- `npm test`: ejecuta las pruebas del backend.
+- `npm run build`: genera el build de producción del frontend.
+- `npm run dev:backend`: inicia la API.
+- `npm run dev:frontend`: inicia React/Vite.
 
-No se incluye autenticación ni roles en esta versión, conforme al alcance del proyecto.
+La raíz del proyecto contiene únicamente configuración, documentación y scripts. Todo el código de aplicación está dentro de `backend/` y `frontend/`.
