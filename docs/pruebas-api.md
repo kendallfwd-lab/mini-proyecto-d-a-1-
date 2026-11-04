@@ -1,8 +1,8 @@
 # Pruebas API
 
-1. Crear la base con `database/01_database.sql`, estructura con `02_schema.sql` y datos con `03_seed.sql`.
+1. Ejecutar `database/migrations/001_initial_schema.sql` y después los seeders `001` a `004` en orden.
 2. Copiar `backend/.env.example` a `backend/.env` y colocar las credenciales de MySQL 8.0.
-3. Ejecutar `npm install:all` desde la raíz.
+3. Ejecutar `npm run install:all` desde la raíz.
 4. Levantar API con `npm run dev:backend` y validar `GET http://localhost:3010/api/health`.
 5. Levantar la interfaz con `npm run dev:frontend`.
 
@@ -21,4 +21,4 @@ POST /api/productos
 }
 ```
 
-Los tests automáticos cubren health check, 404 y validaciones. Las pruebas CRUD completas requieren que MySQL esté encendido y se pueden ejecutar desde Postman con los endpoints documentados.
+Las pruebas automatizadas se ejecutan con `npm test` y cubren health check, 404, CRUD HTTP, rutas del dashboard y validaciones; no necesitan una base MySQL activa porque aíslan los servicios. Las pruebas de persistencia requieren MySQL encendido y se pueden ejecutar desde Postman con los endpoints documentados.

@@ -1,23 +1,150 @@
-import { useEffect, useState } from 'react';
-import { api } from '../services/api';
-import Modal from '../components/Modal';
-import { Feedback } from '../components/Feedback';
+import { useCallback, useState } from 'react';
+import ProductoForm from '../components/forms/ProductoForm';
+import DataTable from '../components/tables/DataTable';
+import Button from '../components/ui/Button';
+import ConfirmDialog from '../components/ui/ConfirmDialog';
+import ErrorMessage from '../components/ui/ErrorMessage';
+import Loading from '../components/ui/Loading';
+import Modal from '../components/ui/Modal';
+import useDebounce from '../hooks/useDebounce';
+import useResource from '../hooks/useResource';
+import { categoriasService } from '../services/categoriasService';
+import { productosService } from '../services/productosService';
+import { proveedoresService } from '../services/proveedoresService';
+import formatCurrency from '../utils/formatCurrency';
+import stockStatus from '../utils/stockStatus';
 
-const empty = { codigo: '', nombre: '', descripcion: '', precio: '', stock: '', categoria_id: '', proveedor_id: '' };
-const money = (v) => new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC', maximumFractionDigits: 0 }).format(v || 0);
-const dzImages = ['airpods-pro-3.webp','airpods-pro-2.webp','airpods-3.webp','airpods-4.webp','airpods-max-azul-medianoche.webp','apple-pencil.webp','estuche-azul-oscuro.webp','estuche-iphone-azul-oscuro.webp','galaxy-buds3-pro.webp','samsung-cargador-45w.webp','samsung-adaptador-45w-sin-cable.webp','cable-usb-c-60w-1m.webp','apple-adaptador-usb-c-35w.webp','earpods-usb-c-premium.webp','kit-cargador-apple-35w-cable.webp','adaptador-audio-usb-c.webp','bateria-magnetica-5000mah.webp','cable-samsung-usbc-negro.webp','cable-apple-usbc-lightning-1m.webp','cable-apple-lightning-usb-1m.png'];
-const imageFor = (code) => code?.startsWith('DZ-') ? `/products/${dzImages[Number(code.slice(3)) - 1] || ''}` : `/products/${imageByCode[code] || ''}`;
-const imageByCode = { 'COMP-001': 'cable-samsung-usbc-negro.webp', 'COMP-002': 'airpods-max.webp', 'COMP-003': 'estuche-iphone-rosado-transparent.webp', 'COMP-004': 'estuche-iphone-arena-transparent.webp', 'COMP-005': 'airpods-3.webp', 'ACC-001': 'estuche-fucsia-transparent.webp', 'ACC-002': 'estuche-azul-oscuro.webp', 'ACC-003': 'apple-pencil.webp', 'ACC-004': 'estuche-iphone-menta-transparent.webp', 'ACC-005': 'earpods-lightning-premium.webp', 'AUD-001': 'samsung-adaptador-45w-sin-cable.webp', 'AUD-002': 'estuche-gris.webp', 'AUD-003': 'cable-apple-lightning-usb-1m.png', 'AUD-004': 'cable-usb-c-60w-1m.webp', 'AUD-005': 'estuche-iphone-cafe.webp', 'ALM-001': 'estuche-iphone-arena.webp', 'ALM-002': 'estuche-turquesa.webp', 'ALM-003': 'bateria-magnetica-10000mah.webp', 'ALM-004': 'earpods-lightning-premium-transparent.webp', 'ALM-005': 'cable-samsung-usbc-blanco.webp', 'RED-001': 'kit-cargador-apple-35w-cable.webp', 'RED-002': 'estuche-negro-transparent.webp', 'RED-003': 'estuche-turquesa-transparent.webp', 'RED-004': 'bateria-magnetica-5000mah.webp', 'RED-005': 'adaptador-audio-usb-c.webp', 'PER-001': 'airpods-4.webp', 'PER-002': 'cable-apple-lightning-usb-1m-empaque.png', 'PER-003': 'airpods-pro-2.webp', 'PER-004': 'galaxy-buds3-pro.webp', 'PER-005': 'adaptador-audio-lightning.webp' };
+const dropZoneImages = [
+  'airpods-pro-3.webp', 'airpods-pro-2.webp', 'airpods-3.webp', 'airpods-4.webp',
+  'airpods-max-azul-medianoche.webp', 'apple-pencil.webp', 'estuche-azul-oscuro.webp',
+  'estuche-iphone-azul-oscuro.webp', 'galaxy-buds3-pro.webp', 'samsung-cargador-45w.webp',
+  'samsung-adaptador-45w-sin-cable.webp', 'cable-usb-c-60w-1m.webp',
+  'apple-adaptador-usb-c-35w.webp', 'earpods-usb-c-premium.webp',
+  'kit-cargador-apple-35w-cable.webp', 'adaptador-audio-usb-c.webp',
+  'bateria-magnetica-5000mah.webp', 'cable-samsung-usbc-negro.webp',
+  'cable-apple-usbc-lightning-1m.webp', 'cable-apple-lightning-usb-1m.png',
+];
+
+function imageFor(product) {
+  if (product.imagen_url) return product.imagen_url;
+  if (product.codigo?.startsWith('DZ-')) {
+    return `/products/${dropZoneImages[Number(product.codigo.slice(3)) - 1] || ''}`;
+  }
+  return '';
+}
 
 export default function Productos() {
-  const [items, setItems] = useState([]); const [cats, setCats] = useState([]); const [providers, setProviders] = useState([]);
-  const [form, setForm] = useState(empty); const [editing, setEditing] = useState(null); const [modal, setModal] = useState(false);
-  const [filters, setFilters] = useState({ search: '', categoria_id: '', disponibilidad: '' }); const [error, setError] = useState(''); const [success, setSuccess] = useState('');
-  const load = () => { const qs = new URLSearchParams(Object.entries(filters).filter(([, value]) => value)); Promise.all([api.productos(`?${qs}`), api.categorias(), api.proveedores()]).then(([p, c, s]) => { setItems(p); setCats(c); setProviders(s); }).catch((e) => setError(e.message)); };
-  useEffect(() => { load(); }, [filters.search, filters.categoria_id, filters.disponibilidad]);
-  const change = (event) => setForm({ ...form, [event.target.name]: event.target.value });
-  const open = (item) => { setEditing(item?.id || null); setForm(item ? { ...item } : empty); setModal(true); };
-  const submit = async (event) => { event.preventDefault(); setError(''); try { const payload = { ...form, precio: Number(form.precio), stock: Number(form.stock), categoria_id: Number(form.categoria_id), proveedor_id: Number(form.proveedor_id) }; editing ? await api.actualizarProducto(editing, payload) : await api.crearProducto(payload); setModal(false); setSuccess(editing ? 'Producto actualizado.' : 'Producto creado.'); load(); } catch (err) { setError(err.message); } };
-  const remove = async (id) => { if (!confirm('¿Eliminar este producto?')) return; try { await api.eliminarProducto(id); setSuccess('Producto eliminado.'); load(); } catch (e) { setError(e.message); } };
-  return <div className="page"><div className="page-heading"><div><p className="muted">Catálogo y existencias</p><h2>Productos</h2></div><button className="button primary" onClick={() => open()}>+ Nuevo producto</button></div><Feedback error={error} success={success}/><section className="panel"><div className="filters"><input placeholder="Buscar por nombre o código…" value={filters.search} onChange={(e) => setFilters({ ...filters, search: e.target.value })}/><select value={filters.categoria_id} onChange={(e) => setFilters({ ...filters, categoria_id: e.target.value })}><option value="">Todas las categorías</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}</select><select value={filters.disponibilidad} onChange={(e) => setFilters({ ...filters, disponibilidad: e.target.value })}><option value="">Cualquier stock</option><option value="disponible">Disponible</option><option value="bajo">Stock bajo</option><option value="agotado">Agotado</option></select></div><div className="table-wrap"><table><thead><tr><th>Producto</th><th>Código</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr></thead><tbody>{items.map((item) => <tr key={item.id}><td className="product-cell"><img className="product-thumb" src={item.imagen_url || imageFor(item.codigo)} alt={item.nombre}/><span><b>{item.nombre}</b><small>{item.proveedor_nombre}</small></span></td><td>{item.codigo}</td><td>{item.categoria_nombre}</td><td>{money(item.precio)}</td><td><span className={`stock ${item.stock === 0 ? 'out' : item.stock <= 5 ? 'low' : ''}`}>{item.stock}</span></td><td><button className="link-button" onClick={() => open(item)}>Editar</button><button className="link-button danger-text" onClick={() => remove(item.id)}>Eliminar</button></td></tr>)}</tbody></table>{!items.length && <div className="empty">No se encontraron productos.</div>}</div></section>{modal && <Modal title={editing ? 'Editar producto' : 'Nuevo producto'} onClose={() => setModal(false)}><form className="form-grid" onSubmit={submit}>{[['codigo','Código'],['nombre','Nombre'],['precio','Precio'],['stock','Stock']].map(([name, label]) => <label key={name}>{label}<input name={name} value={form[name] || ''} onChange={change} required type={['precio','stock'].includes(name) ? 'number' : 'text'} min={name === 'stock' || name === 'precio' ? 0 : undefined}/></label>)}<label>Categoría<select name="categoria_id" value={form.categoria_id || ''} onChange={change} required><option value="">Seleccionar</option>{cats.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}</select></label><label>Proveedor<select name="proveedor_id" value={form.proveedor_id || ''} onChange={change} required><option value="">Seleccionar</option>{providers.map((p) => <option key={p.id} value={p.id}>{p.nombre}</option>)}</select></label><label className="full">Descripción<textarea name="descripcion" value={form.descripcion || ''} onChange={change}/></label><div className="form-actions"><button type="button" className="button secondary" onClick={() => setModal(false)}>Cancelar</button><button className="button primary">Guardar producto</button></div></form></Modal>}</div>;
+  const [searchInput, setSearchInput] = useState('');
+  const search = useDebounce(searchInput);
+  const [filters, setFilters] = useState({ categoria_id: '', disponibilidad: '' });
+  const [editing, setEditing] = useState(null);
+  const [deleting, setDeleting] = useState(null);
+  const [modal, setModal] = useState(false);
+  const [success, setSuccess] = useState('');
+  const query = useCallback(() => {
+    const params = new URLSearchParams();
+    if (search) params.set('search', search);
+    if (filters.categoria_id) params.set('categoria_id', filters.categoria_id);
+    if (filters.disponibilidad) params.set('disponibilidad', filters.disponibilidad);
+    return params.size ? `?${params}` : '';
+  }, [search, filters.categoria_id, filters.disponibilidad]);
+  const load = useCallback(
+    () => Promise.all([
+      productosService.list(query()),
+      categoriasService.list(),
+      proveedoresService.list(),
+    ]),
+    [query],
+  );
+  const { data, loading, error, setError, reload } = useResource(load, [load]);
+  const [items = [], categories = [], suppliers = []] = data || [];
+
+  function open(product) {
+    setEditing(product || null);
+    setModal(true);
+    setError('');
+  }
+
+  async function save(form) {
+    try {
+      if (editing) await productosService.update(editing.id, form);
+      else await productosService.create(form);
+      setModal(false);
+      setSuccess(editing ? 'Producto actualizado.' : 'Producto creado.');
+      reload();
+    } catch (saveError) {
+      setError(saveError.message);
+    }
+  }
+
+  async function remove() {
+    try {
+      await productosService.remove(deleting.id);
+      setDeleting(null);
+      setSuccess('Producto eliminado.');
+      reload();
+    } catch (removeError) {
+      setDeleting(null);
+      setError(removeError.message);
+    }
+  }
+
+  const columns = [
+    {
+      key: 'product',
+      label: 'Producto',
+      render: (product) => {
+        const image = imageFor(product);
+        return (
+          <div className="product-cell">
+            {image ? <img className="product-thumb" src={image} alt="" onError={(event) => { event.currentTarget.hidden = true; }} /> : <span className="product-placeholder" aria-hidden="true">{product.nombre.charAt(0)}</span>}
+            <span><b>{product.nombre}</b><small>{product.proveedor_nombre}</small></span>
+          </div>
+        );
+      },
+    },
+    { key: 'codigo', label: 'Código' },
+    { key: 'categoria_nombre', label: 'Categoría' },
+    { key: 'precio', label: 'Precio', render: (product) => formatCurrency(product.precio) },
+    { key: 'stock', label: 'Stock', render: (product) => <span className={`stock ${stockStatus(product.stock)}`}>{product.stock}</span> },
+    {
+      key: 'actions',
+      label: 'Acciones',
+      render: (product) => (
+        <>
+          <button className="link-button" onClick={() => open(product)}>Editar</button>
+          <button className="link-button danger-text" onClick={() => setDeleting(product)}>Eliminar</button>
+        </>
+      ),
+    },
+  ];
+
+  return (
+    <div className="page">
+      <div className="page-heading">
+        <div><p className="muted">Catálogo y existencias</p><h2>Productos</h2></div>
+        <Button onClick={() => open(null)}>+ Nuevo producto</Button>
+      </div>
+      <ErrorMessage error={error} success={success} />
+      <section className="panel">
+        <div className="filters">
+          <input aria-label="Buscar productos" placeholder="Buscar por nombre o código…" value={searchInput} onChange={(event) => setSearchInput(event.target.value)} />
+          <select aria-label="Filtrar por categoría" value={filters.categoria_id} onChange={(event) => setFilters({ ...filters, categoria_id: event.target.value })}>
+            <option value="">Todas las categorías</option>
+            {categories.map((category) => <option key={category.id} value={category.id}>{category.nombre}</option>)}
+          </select>
+          <select aria-label="Filtrar por disponibilidad" value={filters.disponibilidad} onChange={(event) => setFilters({ ...filters, disponibilidad: event.target.value })}>
+            <option value="">Cualquier stock</option><option value="disponible">Disponible</option><option value="bajo">Stock bajo</option><option value="agotado">Agotado</option>
+          </select>
+        </div>
+        {loading ? <Loading /> : <DataTable columns={columns} rows={items} emptyMessage="No se encontraron productos." />}
+      </section>
+      {modal && (
+        <Modal title={editing ? 'Editar producto' : 'Nuevo producto'} onClose={() => setModal(false)}>
+          <ProductoForm initialValues={editing || undefined} categories={categories} suppliers={suppliers} onSubmit={save} onCancel={() => setModal(false)} />
+        </Modal>
+      )}
+      {deleting && <ConfirmDialog onCancel={() => setDeleting(null)} onConfirm={remove}>¿Deseas eliminar “{deleting.nombre}”? Esta acción no se puede deshacer.</ConfirmDialog>}
+    </div>
+  );
 }

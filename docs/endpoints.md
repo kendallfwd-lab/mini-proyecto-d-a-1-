@@ -8,6 +8,6 @@ Base URL: `http://localhost:3010/api`
 | Categorías | `/categorias` | `/categorias/:id` | `/categorias` | `/categorias/:id` | `/categorias/:id` |
 | Proveedores | `/proveedores` | `/proveedores/:id` | `/proveedores` | `/proveedores/:id` | `/proveedores/:id` |
 
-Extras: `GET /health` y `GET /dashboard/resumen`.
+Extras: `GET /health`, `GET /dashboard/resumen` y `GET /dashboard/analiticas`.
 
-Filtros de productos: `search`, `categoria_id`, `proveedor_id`, `disponibilidad` (`disponible`, `bajo`, `agotado`), `sort` y `order`.
+Filtros de productos: `search`, `categoria_id`, `proveedor_id`, `disponibilidad` (`disponible`, `bajo`, `agotado`), `sort` (`precio` o nombre) y `direction` (`asc` o `desc`).

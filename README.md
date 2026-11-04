@@ -1,49 +1,76 @@
-# Drop_Zone CR — Business Inventory Manager
+# Drop_Zone CR — Inventario
 
-Sistema full stack para administrar el inventario de Drop_Zone CR con MySQL, Express y React/Vite.
+Aplicación para administrar productos, categorías y proveedores, con panel de inventario y analíticas. Está dividida en React/Vite, una API REST con Express y MySQL.
 
-## Inicio rápido
+## Preparar el entorno
+
+Requisitos: Node.js 18+, MySQL 8+.
 
 ```powershell
 npm run install:all
-Copy-Item backend/.env.example backend/.env
-# Editar backend/.env con las credenciales de MySQL
-npm run dev:backend
-# En otra terminal
-npm run dev:frontend
+if (!(Test-Path backend/.env)) { Copy-Item backend/.env.example backend/.env }
+if (!(Test-Path frontend/.env)) { Copy-Item frontend/.env.example frontend/.env }
 ```
 
-Ejecuta en MySQL Workbench los archivos de `database/` en orden. El archivo `06_drop_zone_catalogo.sql` carga el catálogo y precios de Drop_Zone CR. El archivo `07_analiticas_inventario.sql` agrega movimientos, ventas y datos históricos para el panel.
+Configura `backend/.env` con el usuario y la contraseña de MySQL. No agregues archivos `.env` al repositorio. La aplicación usa:
 
 - API: `http://localhost:3010`
 - Frontend: `http://localhost:5173`
-- Analíticas: `GET /api/dashboard/analiticas`
+- URL de API del frontend: `VITE_API_URL` (por defecto `http://localhost:3010/api`)
 
-## Estructura
+## Crear y cargar la base de datos
+
+En MySQL Workbench, ejecuta en este orden:
+
+1. `database/migrations/001_initial_schema.sql`
+2. `database/seeders/001_datos_iniciales.sql`
+3. `database/seeders/002_imagenes_productos.sql`
+4. `database/seeders/003_catalogo_drop_zone.sql`
+5. `database/seeders/004_analiticas_inventario.sql`
+
+`database/schema.sql` contiene el esquema inicial completo para crear la base desde cero. `database/verification.sql` permite inspeccionar tablas, relaciones y registros.
+
+## Ejecutar
+
+Abre dos terminales desde la raíz:
+
+```powershell
+npm run dev:backend
+```
+
+```powershell
+npm run dev:frontend
+```
+
+La API ofrece CRUD para productos, categorías y proveedores, además de `/api/dashboard/resumen` y `/api/dashboard/analiticas`. El endpoint `/api/health` comprueba el estado HTTP de la API.
+
+## Pruebas y compilación
+
+```powershell
+npm test
+npm run build
+```
+
+## Estructura y responsabilidades
 
 ```text
 backend/
-  src/
-    config/       conexión a MySQL
-    controllers/  lógica de cada recurso
-    models/       consultas SQL
-    routes/       endpoints HTTP
-    validators/   validaciones y pruebas
+  src/config/       Conexión MySQL y política CORS
+  src/controllers/  Traduce solicitudes HTTP a respuestas
+  src/models/       Consultas parametrizadas a MySQL
+  src/routes/       Define endpoints y aplica validaciones
+  src/middleware/   Validación de solicitudes y errores HTTP
+  src/validators/   Reglas de entrada por entidad
+  src/services/     Operaciones de negocio y analíticas
+  src/utils/        Errores HTTP y controladores async
+  tests/            Pruebas de API y validadores
 frontend/
-  src/
-    components/   componentes reutilizables
-    pages/        pantallas del panel
-    services/     cliente centralizado de la API
-  public/         logo e imágenes del catálogo
-database/         esquema, catálogo, seed y analíticas
-docs/             documentación del proyecto
+  src/components/   Layout, formularios, tablas y elementos UI
+  src/pages/        Vistas conectadas con los servicios
+  src/services/     Cliente HTTP y servicios por recurso
+  src/hooks/        Carga de recursos y debounce
+  src/styles/       Variables, estilos globales y responsive
+  src/utils/        Formato monetario y estado del stock
+database/           Migración, esquema, datos y verificación
+docs/               Modelo, endpoints, pruebas y diagrama ER
 ```
-
-## Comandos
-
-- `npm test`: ejecuta las pruebas del backend.
-- `npm run build`: genera el build de producción del frontend.
-- `npm run dev:backend`: inicia la API.
-- `npm run dev:frontend`: inicia React/Vite.
-
-La raíz del proyecto contiene únicamente configuración, documentación y scripts. Todo el código de aplicación está dentro de `backend/` y `frontend/`.

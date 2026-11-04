@@ -1,6 +1,81 @@
-import { useEffect, useState } from 'react';
-import { api } from '../services/api';
-import Modal from '../components/Modal';
-import { Feedback } from '../components/Feedback';
+import { useCallback, useState } from 'react';
+import DataTable from '../components/tables/DataTable';
+import Button from '../components/ui/Button';
+import ConfirmDialog from '../components/ui/ConfirmDialog';
+import ErrorMessage from '../components/ui/ErrorMessage';
+import Loading from '../components/ui/Loading';
+import Modal from '../components/ui/Modal';
+import useResource from '../hooks/useResource';
 
-export default function CrudPage({ type, title, subtitle, fields }) { const [items, setItems] = useState([]), [editing, setEditing] = useState(null), [form, setForm] = useState({}), [modal, setModal] = useState(false), [error, setError] = useState(''), [success, setSuccess] = useState(''); const load = () => api[type]().then(setItems).catch((e) => setError(e.message)); useEffect(() => { load(); }, []); const open = (item) => { setEditing(item?.id || null); setForm(item ? Object.fromEntries(fields.map(([key]) => [key, item[key] || ''])) : Object.fromEntries(fields.map(([key]) => [key, '']))); setModal(true); }; const submit = async (e) => { e.preventDefault(); try { editing ? await api[`actualizar${type === 'categorias' ? 'Categoria' : 'Proveedor'}`](editing, form) : await api[`crear${type === 'categorias' ? 'Categoria' : 'Proveedor'}`](form); setModal(false); setSuccess(editing ? 'Registro actualizado.' : 'Registro creado.'); load(); } catch (err) { setError(err.message); } }; const remove = async (id) => { if (!confirm('¿Eliminar este registro?')) return; try { await api[`eliminar${type === 'categorias' ? 'Categoria' : 'Proveedor'}`](id); setSuccess('Registro eliminado.'); load(); } catch (e) { setError(e.message); } }; return <div className="page"><div className="page-heading"><div><p className="muted">Catálogo auxiliar</p><h2>{title}</h2><p className="muted">{subtitle}</p></div><button className="button primary" onClick={() => open()}>+ Nuevo {type === 'categorias' ? 'categoría' : 'proveedor'}</button></div><Feedback error={error} success={success}/><section className="panel"><div className="table-wrap"><table><thead><tr>{fields.map(([, label]) => <th key={label}>{label}</th>)}<th>Creado</th><th>Acciones</th></tr></thead><tbody>{items.map((item) => <tr key={item.id}>{fields.map(([key]) => <td key={key}><b>{item[key]}</b></td>)}<td>{new Date(item.fecha_creacion).toLocaleDateString('es-CR')}</td><td><button className="link-button" onClick={() => open(item)}>Editar</button><button className="link-button danger-text" onClick={() => remove(item.id)}>Eliminar</button></td></tr>)}</tbody></table>{!items.length && <div className="empty">No hay registros todavía.</div>}</div></section>{modal && <Modal title={editing ? `Editar ${type === 'categorias' ? 'categoría' : 'proveedor'}` : `Nuevo ${type === 'categorias' ? 'categoría' : 'proveedor'}`} onClose={() => setModal(false)}><form className="form-grid" onSubmit={submit}>{fields.map(([key, label]) => <label className={key === 'descripcion' || key === 'direccion' ? 'full' : ''} key={key}>{label}{key === 'descripcion' || key === 'direccion' ? <textarea name={key} value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })}/> : <input name={key} value={form[key]} onChange={(e) => setForm({ ...form, [key]: e.target.value })} required/>}</label>)}<div className="form-actions"><button type="button" className="button secondary" onClick={() => setModal(false)}>Cancelar</button><button className="button primary">Guardar</button></div></form></Modal>}</div>; }
+export default function CrudPage({ title, entity, subtitle, fields, resource, Form }) {
+  const [editing, setEditing] = useState(null);
+  const [modal, setModal] = useState(false);
+  const [deleting, setDeleting] = useState(null);
+  const [success, setSuccess] = useState('');
+  const load = useCallback(() => resource.list(), [resource]);
+  const { data: items, loading, error, setError, reload } = useResource(load, [load]);
+
+  function open(item) {
+    setEditing(item || null);
+    setModal(true);
+    setError('');
+  }
+
+  async function save(form) {
+    try {
+      if (editing) await resource.update(editing.id, form);
+      else await resource.create(form);
+      setModal(false);
+      setSuccess(editing ? 'Registro actualizado.' : 'Registro creado.');
+      reload();
+    } catch (saveError) {
+      setError(saveError.message);
+    }
+  }
+
+  async function remove() {
+    try {
+      await resource.remove(deleting.id);
+      setDeleting(null);
+      setSuccess('Registro eliminado.');
+      reload();
+    } catch (removeError) {
+      setDeleting(null);
+      setError(removeError.message);
+    }
+  }
+
+  const columns = [
+    ...fields.map(([key, label]) => ({ key, label, render: (item) => <b>{item[key] || '—'}</b> })),
+    { key: 'fecha_creacion', label: 'Creado', render: (item) => item.fecha_creacion ? new Date(item.fecha_creacion).toLocaleDateString('es-CR') : '—' },
+    {
+      key: 'actions',
+      label: 'Acciones',
+      render: (item) => (
+        <>
+          <button className="link-button" onClick={() => open(item)}>Editar</button>
+          <button className="link-button danger-text" onClick={() => setDeleting(item)}>Eliminar</button>
+        </>
+      ),
+    },
+  ];
+
+  return (
+    <div className="page">
+      <div className="page-heading">
+        <div><p className="muted">Catálogo auxiliar</p><h2>{title}</h2><p className="muted">{subtitle}</p></div>
+        <Button onClick={() => open(null)}>+ {entity === 'categoría' ? 'Nueva' : 'Nuevo'} {entity}</Button>
+      </div>
+      <ErrorMessage error={error} success={success} />
+      <section className="panel">
+        {loading ? <Loading /> : <DataTable columns={columns} rows={items || []} emptyMessage="No hay registros todavía." />}
+      </section>
+      {modal && (
+        <Modal title={`${editing ? 'Editar' : entity === 'categoría' ? 'Nueva' : 'Nuevo'} ${entity}`} onClose={() => setModal(false)}>
+          <Form initialValues={editing || undefined} onSubmit={save} onCancel={() => setModal(false)} />
+        </Modal>
+      )}
+      {deleting && <ConfirmDialog onCancel={() => setDeleting(null)} onConfirm={remove}>¿Deseas eliminar “{deleting.nombre}”? Esta acción no se puede deshacer.</ConfirmDialog>}
+    </div>
+  );
+}

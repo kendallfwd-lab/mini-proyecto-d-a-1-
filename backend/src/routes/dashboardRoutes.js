@@ -1,1 +1,7 @@
-const router = require('express').Router(); const c = require('../controllers/dashboardController'); router.get('/resumen', c.summary); router.get('/analiticas', c.analytics); module.exports = router;
+const router = require('express').Router();
+const controller = require('../controllers/dashboardController');
+
+router.get('/resumen', controller.summary);
+router.get('/analiticas', controller.analytics);
+
+module.exports = router;
