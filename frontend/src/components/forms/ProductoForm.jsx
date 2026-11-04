@@ -6,6 +6,7 @@ const emptyProduct = {
   nombre: '',
   descripcion: '',
   precio: '',
+  costo_unitario: '',
   stock: '',
   categoria_id: '',
   proveedor_id: '',
@@ -32,10 +33,11 @@ export default function ProductoForm({ initialValues = emptyProduct, categories,
         ['codigo', 'Código', 'text'],
         ['nombre', 'Nombre', 'text'],
         ['precio', 'Precio', 'number'],
+        ['costo_unitario', 'Costo unitario (opcional)', 'number'],
         ['stock', 'Stock', 'number'],
       ].map(([name, label, type]) => (
         <label key={name}>{label}
-          <input name={name} type={type} value={form[name] ?? ''} onChange={change} required min={type === 'number' ? 0 : undefined} step={name === 'precio' ? '0.01' : undefined} />
+          <input name={name} type={type} value={form[name] ?? ''} onChange={change} required={name !== 'costo_unitario'} min={type === 'number' ? 0 : undefined} step={['precio', 'costo_unitario'].includes(name) ? '0.01' : undefined} />
         </label>
       ))}
       <label>Categoría

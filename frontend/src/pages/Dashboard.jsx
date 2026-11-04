@@ -12,7 +12,11 @@ import stockStatus from '../utils/stockStatus';
 
 export default function Dashboard() {
   const load = useCallback(
-    () => Promise.all([dashboardService.summary(), dashboardService.analytics()]),
+    () => Promise.all([
+      dashboardService.summary(),
+      dashboardService.analytics(),
+      dashboardService.profitability(),
+    ]),
     [],
   );
   const { data, loading, error, reload } = useResource(load, [load]);
@@ -21,7 +25,7 @@ export default function Dashboard() {
   if (error) return <div className="page"><ErrorMessage error={error} /><Button onClick={reload}>Reintentar</Button></div>;
   if (!data) return null;
 
-  const [summary, analytics] = data;
+  const [summary, analytics, profitability] = data;
   const topProducts = analytics.productos_mas_vendidos || [];
   const recentColumns = [
     { key: 'nombre', label: 'Producto', render: (item) => <b>{item.nombre}</b> },
@@ -43,6 +47,19 @@ export default function Dashboard() {
         <StatCard label="Valor inventario" value={formatCurrency(summary.totales.valor_inventario)} detail="valor estimado" tone="orange" />
         <StatCard label="Stock agotado" value={summary.totales.agotados} detail="requieren atención" tone="red" />
       </div>
+      <section className="panel profitability-panel">
+        <div className="panel-heading">
+          <div><h3>Ganancia neta real</h3><p className="muted">Solo considera ventas pagadas y registros no demo.</p></div>
+          <a className="button secondary" href="/gastos">Ver gastos y ganancias</a>
+        </div>
+        <strong className={`profit-value ${profitability.real.ganancia_completa ? '' : 'incomplete'}`}>
+          {profitability.real.ganancia_completa
+            ? formatCurrency(profitability.real.ganancia_neta)
+            : 'Incompleta: faltan costos'}
+        </strong>
+        {profitability.real.lineas_sin_costo > 0 && <p className="muted">Completa el costo unitario de productos con ventas reales para calcular la ganancia.</p>}
+        <p className="demo-caption">Ganancia de datos demo (no real): {formatCurrency(profitability.demostracion.ganancia_neta)}</p>
+      </section>
       <div className="dashboard-grid">
         <section className="panel">
           <div className="panel-heading"><div><h3>Productos por categoría</h3><p className="muted">Distribución actual</p></div></div>

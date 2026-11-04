@@ -5,6 +5,11 @@ const titles = {
   '/productos': 'Productos',
   '/categorias': 'Categorías',
   '/proveedores': 'Proveedores',
+  '/compras': 'Compras y reposición',
+  '/clientes': 'Clientes',
+  '/ventas': 'Ventas',
+  '/facturas': 'Facturas',
+  '/gastos': 'Gastos y ganancias',
 };
 
 export default function Header() {

@@ -19,6 +19,11 @@ module.exports = function validateProducto(body) {
   if (body.precio === undefined || Number.isNaN(Number(body.precio)) || Number(body.precio) < 0) {
     errors.push('precio debe ser un número no negativo');
   }
+  if (body.costo_unitario !== undefined
+    && body.costo_unitario !== null
+    && (Number.isNaN(Number(body.costo_unitario)) || Number(body.costo_unitario) < 0)) {
+    errors.push('costo_unitario debe ser un número no negativo');
+  }
   if (!Number.isInteger(Number(body.stock)) || Number(body.stock) < 0) {
     errors.push('stock debe ser un entero no negativo');
   }

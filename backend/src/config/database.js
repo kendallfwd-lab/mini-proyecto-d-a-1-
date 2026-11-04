@@ -9,6 +9,7 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || 'business_inventory',
   waitForConnections: true,
   connectionLimit: 10,
+  dateStrings: true,
   namedPlaceholders: false,
 });
 

@@ -14,6 +14,11 @@ app.get('/api/health', (req, res) => {
 app.use('/api/productos', require('./routes/productosRoutes'));
 app.use('/api/categorias', require('./routes/categoriasRoutes'));
 app.use('/api/proveedores', require('./routes/proveedoresRoutes'));
+app.use('/api/clientes', require('./routes/clientesRoutes'));
+app.use('/api/compras', require('./routes/comprasRoutes'));
+app.use('/api/ventas', require('./routes/ventasRoutes'));
+app.use('/api/facturas', require('./routes/facturasRoutes'));
+app.use('/api/gastos', require('./routes/gastosRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use(notFound);
 app.use(errorHandler);

@@ -1,6 +1,7 @@
 jest.mock('../src/services/dashboardService', () => ({
   summary: jest.fn(),
   analytics: jest.fn(),
+  profitability: jest.fn(),
 }));
 
 const request = require('supertest');
@@ -24,5 +25,17 @@ describe('API del dashboard', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.data.resumen.ventas_pagadas).toBe(1200);
+  });
+
+  test('separa la rentabilidad real de los datos demo', async () => {
+    service.profitability.mockResolvedValue({
+      real: { ingresos: 100, ganancia_neta: 40 },
+      demostracion: { ingresos: 200, ganancia_neta: 80 },
+    });
+    const response = await request(app).get('/api/dashboard/rentabilidad');
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.real.ingresos).toBe(100);
+    expect(response.body.data.demostracion.ingresos).toBe(200);
   });
 });

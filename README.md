@@ -23,10 +23,16 @@ Configura `backend/.env` con el usuario y la contraseña de MySQL. No agregues a
 En MySQL Workbench, ejecuta en este orden:
 
 1. `database/migrations/001_initial_schema.sql`
-2. `database/seeders/001_datos_iniciales.sql`
-3. `database/seeders/002_imagenes_productos.sql`
-4. `database/seeders/003_catalogo_drop_zone.sql`
-5. `database/seeders/004_analiticas_inventario.sql`
+2. `database/migrations/002_gastos_rentabilidad.sql`
+3. `database/migrations/003_compras_clientes.sql`
+4. `database/migrations/004_facturas.sql`
+5. `database/seeders/001_datos_iniciales.sql`
+6. `database/seeders/002_imagenes_productos.sql`
+7. `database/seeders/003_catalogo_drop_zone.sql`
+8. `database/seeders/004_analiticas_inventario.sql`
+9. `database/seeders/005_gastos_demo.sql`
+10. `database/seeders/006_compras_clientes_demo.sql`
+11. `database/seeders/007_facturas_demo.sql`
 
 `database/schema.sql` contiene el esquema inicial completo para crear la base desde cero. `database/verification.sql` permite inspeccionar tablas, relaciones y registros.
 
@@ -42,7 +48,7 @@ npm run dev:backend
 npm run dev:frontend
 ```
 
-La API ofrece CRUD para productos, categorías y proveedores, además de `/api/dashboard/resumen` y `/api/dashboard/analiticas`. El endpoint `/api/health` comprueba el estado HTTP de la API.
+La API ofrece gestión de productos, categorías, proveedores, clientes, compras, ventas, facturas y gastos, además de los endpoints `/api/dashboard/resumen`, `/api/dashboard/analiticas` y `/api/dashboard/rentabilidad`. Las compras permiten recepciones parciales; cada entrada actualiza existencias, el costo vigente del producto y el historial de movimientos. Las ventas piden un teléfono y crean una factura numerada automáticamente. En `/facturas` se puede consultar, imprimir/guardar en PDF y abrir WhatsApp con el detalle preparado para revisión y envío manual. Los seeders `006_compras_clientes_demo.sql` y `007_facturas_demo.sql` agregan clientes, pedidos, ventas y facturas de demostración: están marcados como DEMO, no alteran existencias ni se mezclan con cifras reales, y no se pueden enviar por WhatsApp. El endpoint `/api/health` comprueba el estado HTTP de la API.
 
 ## Pruebas y compilación
 

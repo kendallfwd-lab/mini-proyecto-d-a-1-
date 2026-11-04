@@ -8,7 +8,7 @@ function errorHandler(error, req, res, next) {
   const message = error.code === 'ER_DUP_ENTRY'
     ? 'El registro ya existe'
     : error.code === 'ER_ROW_IS_REFERENCED_2'
-      ? 'No se puede eliminar porque hay productos asociados'
+      ? 'No se puede eliminar porque existen registros asociados'
     : status >= 500
       ? 'Error interno del servidor'
       : error.message;

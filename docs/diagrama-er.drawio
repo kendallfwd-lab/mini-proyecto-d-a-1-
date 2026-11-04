@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2026-11-04T18:00:00.000Z" agent="Copilot" version="24.7.17">
+<mxfile host="app.diagrams.net" modified="2026-11-04T19:35:00.000Z" agent="Copilot" version="24.7.17">
   <diagram id="inventory-er" name="Modelo ER">
-    <mxGraphModel dx="1100" dy="720" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+    <mxGraphModel dx="1100" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="1200" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
@@ -10,17 +10,29 @@
         <mxCell id="proveedores" value="&lt;b&gt;proveedores&lt;/b&gt;&lt;hr&gt;PK id&lt;br&gt;nombre&lt;br&gt;correo&lt;br&gt;telefono&lt;br&gt;direccion&lt;br&gt;fecha_creacion" style="swimlane;html=1;startSize=28;rounded=0;fillColor=#e8eaff;strokeColor=#564be6;fontSize=14;" vertex="1" parent="1">
           <mxGeometry x="790" y="130" width="230" height="190" as="geometry"/>
         </mxCell>
-        <mxCell id="productos" value="&lt;b&gt;productos&lt;/b&gt;&lt;hr&gt;PK id&lt;br&gt;UK codigo&lt;br&gt;nombre, descripcion&lt;br&gt;precio, stock&lt;br&gt;FK categoria_id&lt;br&gt;FK proveedor_id&lt;br&gt;imagen_url, fechas" style="swimlane;html=1;startSize=28;rounded=0;fillColor=#e0f7ed;strokeColor=#159568;fontSize=14;" vertex="1" parent="1">
+        <mxCell id="productos" value="&lt;b&gt;productos&lt;/b&gt;&lt;hr&gt;PK id&lt;br&gt;UK codigo&lt;br&gt;nombre, descripcion&lt;br&gt;precio, costo_unitario, stock&lt;br&gt;FK categoria_id&lt;br&gt;FK proveedor_id&lt;br&gt;imagen_url, fechas" style="swimlane;html=1;startSize=28;rounded=0;fillColor=#e0f7ed;strokeColor=#159568;fontSize=14;" vertex="1" parent="1">
           <mxGeometry x="425" y="120" width="250" height="220" as="geometry"/>
         </mxCell>
-        <mxCell id="ventas" value="&lt;b&gt;ventas&lt;/b&gt;&lt;hr&gt;PK id&lt;br&gt;fecha_venta&lt;br&gt;cliente, canal&lt;br&gt;estado, total" style="swimlane;html=1;startSize=28;rounded=0;fillColor=#fff1d9;strokeColor=#db911a;fontSize=14;" vertex="1" parent="1">
+        <mxCell id="ventas" value="&lt;b&gt;ventas&lt;/b&gt;&lt;hr&gt;PK id&lt;br&gt;FK cliente_id&lt;br&gt;fecha_venta&lt;br&gt;cliente, canal&lt;br&gt;estado, total, es_demo" style="swimlane;html=1;startSize=28;rounded=0;fillColor=#fff1d9;strokeColor=#db911a;fontSize=14;" vertex="1" parent="1">
           <mxGeometry x="80" y="490" width="230" height="150" as="geometry"/>
         </mxCell>
-        <mxCell id="venta_detalle" value="&lt;b&gt;venta_detalle&lt;/b&gt;&lt;hr&gt;PK id&lt;br&gt;FK venta_id&lt;br&gt;FK producto_id&lt;br&gt;cantidad, precio_unitario&lt;br&gt;subtotal (calculado)" style="swimlane;html=1;startSize=28;rounded=0;fillColor=#fff1d9;strokeColor=#db911a;fontSize=14;" vertex="1" parent="1">
+        <mxCell id="venta_detalle" value="&lt;b&gt;venta_detalle&lt;/b&gt;&lt;hr&gt;PK id&lt;br&gt;FK venta_id&lt;br&gt;FK producto_id&lt;br&gt;cantidad, precio_unitario&lt;br&gt;costo_unitario, subtotal (calculado)" style="swimlane;html=1;startSize=28;rounded=0;fillColor=#fff1d9;strokeColor=#db911a;fontSize=14;" vertex="1" parent="1">
           <mxGeometry x="425" y="470" width="250" height="170" as="geometry"/>
         </mxCell>
         <mxCell id="movimientos" value="&lt;b&gt;movimientos_inventario&lt;/b&gt;&lt;hr&gt;PK id&lt;br&gt;FK producto_id&lt;br&gt;tipo, cantidad&lt;br&gt;motivo, fecha_movimiento" style="swimlane;html=1;startSize=28;rounded=0;fillColor=#ffe9e9;strokeColor=#db3d48;fontSize=14;" vertex="1" parent="1">
           <mxGeometry x="790" y="470" width="250" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="clientes" value="&lt;b&gt;clientes&lt;/b&gt;&lt;hr&gt;PK id&lt;br&gt;nombre&lt;br&gt;correo, telefono&lt;br&gt;direccion, es_demo&lt;br&gt;fecha_creacion" style="swimlane;html=1;startSize=28;rounded=0;fillColor=#e8eaff;strokeColor=#564be6;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="80" y="730" width="230" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="compra_detalle" value="&lt;b&gt;compra_detalle&lt;/b&gt;&lt;hr&gt;PK id&lt;br&gt;FK compra_id&lt;br&gt;FK producto_id&lt;br&gt;cantidad, cantidad_recibida&lt;br&gt;costo_unitario, subtotal" style="swimlane;html=1;startSize=28;rounded=0;fillColor=#e0f7ed;strokeColor=#159568;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="425" y="730" width="250" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="compras" value="&lt;b&gt;compras&lt;/b&gt;&lt;hr&gt;PK id&lt;br&gt;FK proveedor_id&lt;br&gt;fecha_pedido&lt;br&gt;estado, total, es_demo&lt;br&gt;notas, fecha_recepcion" style="swimlane;html=1;startSize=28;rounded=0;fillColor=#e0f7ed;strokeColor=#159568;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="790" y="730" width="250" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="facturas" value="&lt;b&gt;facturas&lt;/b&gt;&lt;hr&gt;PK id&lt;br&gt;UK numero_factura&lt;br&gt;FK venta_id&lt;br&gt;telefono_cliente&lt;br&gt;fecha_emision, es_demo" style="swimlane;html=1;startSize=28;rounded=0;fillColor=#e8eaff;strokeColor=#564be6;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="80" y="950" width="250" height="170" as="geometry"/>
         </mxCell>
         <mxCell id="rel_categoria" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERoneToMany;endFill=0;strokeColor=#564be6;" edge="1" parent="1" source="categorias" target="productos">
           <mxGeometry relative="1" as="geometry"/>
@@ -35,6 +47,21 @@
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="rel_movimiento" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERoneToMany;endFill=0;strokeColor=#db3d48;" edge="1" parent="1" source="productos" target="movimientos">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_cliente_venta" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERoneToMany;endFill=0;strokeColor=#564be6;" edge="1" parent="1" source="clientes" target="ventas">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_compra_detalle" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERoneToMany;endFill=0;strokeColor=#159568;" edge="1" parent="1" source="compras" target="compra_detalle">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_producto_compra_detalle" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERoneToMany;endFill=0;strokeColor=#159568;" edge="1" parent="1" source="productos" target="compra_detalle">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_proveedor_compras" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERoneToMany;endFill=0;strokeColor=#564be6;" edge="1" parent="1" source="proveedores" target="compras">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="rel_venta_factura" value="1:0..1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERoneToMany;endFill=0;strokeColor=#564be6;" edge="1" parent="1" source="ventas" target="facturas">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
       </root>

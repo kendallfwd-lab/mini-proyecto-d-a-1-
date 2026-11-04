@@ -6,6 +6,11 @@ const links = [
   { to: '/productos', label: 'Productos', icon: '▤' },
   { to: '/categorias', label: 'Categorías', icon: '◇' },
   { to: '/proveedores', label: 'Proveedores', icon: '♙' },
+  { to: '/compras', label: 'Compras y reposición', icon: '↓' },
+  { to: '/clientes', label: 'Clientes', icon: '♧' },
+  { to: '/ventas', label: 'Ventas', icon: '↗' },
+  { to: '/facturas', label: 'Facturas', icon: '▧' },
+  { to: '/gastos', label: 'Gastos y ganancias', icon: '₡' },
 ];
 
 export default function Sidebar() {

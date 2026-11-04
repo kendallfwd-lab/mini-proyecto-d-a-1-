@@ -8,3 +8,7 @@ exports.summary = asyncHandler(async (req, res) => {
 exports.analytics = asyncHandler(async (req, res) => {
   res.json({ success: true, data: await service.analytics() });
 });
+
+exports.profitability = asyncHandler(async (req, res) => {
+  res.json({ success: true, data: await service.profitability() });
+});
