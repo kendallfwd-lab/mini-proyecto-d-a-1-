@@ -8,7 +8,9 @@ if (process.env.JWT_SECRET.length < 32 || process.env.JWT_SECRET.includes('repla
   throw new Error('JWT_SECRET debe tener al menos 32 caracteres aleatorios');
 }
 
-const options = { algorithm: 'HS256', expiresIn: process.env.JWT_EXPIRES_IN, issuer: process.env.JWT_ISSUER, audience: process.env.JWT_AUDIENCE };
+const options = { algorithm: 'HS256', expiresIn: process.env.JWT_EXPIRES_IN || '15m', issuer: process.env.JWT_ISSUER, audience: process.env.JWT_AUDIENCE };
 function sign(payload) { return jwt.sign(payload, process.env.JWT_SECRET, options); }
 function verify(token) { return jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'], issuer: process.env.JWT_ISSUER, audience: process.env.JWT_AUDIENCE }); }
-module.exports = { sign, verify };
+function signCsrf(sessionId) { return jwt.sign({ sid: sessionId, typ: 'csrf' }, process.env.JWT_SECRET, { algorithm: 'HS256', expiresIn: '15m', issuer: process.env.JWT_ISSUER, audience: process.env.JWT_AUDIENCE }); }
+function verifyCsrf(token) { return jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'], issuer: process.env.JWT_ISSUER, audience: process.env.JWT_AUDIENCE }); }
+module.exports = { sign, verify, signCsrf, verifyCsrf };

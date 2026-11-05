@@ -6,6 +6,8 @@ const validateAdmin = require('../validators/adminValidator');
 const { validateRequest, validateIdParam } = require('../middleware/validateRequest');
 router.use(auth, principal);
 router.get('/usuarios', controller.list);
+router.get('/auditoria', controller.audit);
 router.post('/usuarios', validateRequest(validateAdmin), controller.create);
 router.patch('/usuarios/:id/desactivar', validateIdParam, controller.deactivate);
+router.patch('/usuarios/:id/revocar-sesiones', validateIdParam, controller.revokeSessions);
 module.exports = router;

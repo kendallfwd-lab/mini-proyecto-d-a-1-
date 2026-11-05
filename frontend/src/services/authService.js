@@ -1,6 +1,6 @@
 import { request } from './api';
 export const authService = {
-  register: (data) => request('/auth/register', { method: 'POST', body: JSON.stringify(data), skipUnauthorized: true }),
   login: (data) => request('/auth/login', { method: 'POST', body: JSON.stringify(data), skipUnauthorized: true }),
   me: () => request('/auth/me'),
+  logout: () => request('/auth/logout', { method: 'POST' }),
 };
