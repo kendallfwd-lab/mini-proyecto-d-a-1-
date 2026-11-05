@@ -10,6 +10,7 @@
     "admin:mfa:setup": "node scripts/setupMfa.js",
     "admin:mfa:rotate": "node scripts/rotateMfa.js",
     "admin:password:change": "node scripts/changeAdminPassword.js",
+    "admin:password:reset": "node scripts/resetAdminPassword.js",
     "admin:mail:test": "node scripts/testMail.js",
     "admin:mail:configure": "node scripts/configureMail.js",
     "db:migrate:security": "node scripts/migrate.js 007_security_sessions_audit.sql",
