@@ -3,8 +3,8 @@ const pool = require('../config/database');
 async function createSession({ id, userId, expiresAt, ip, userAgent }) {
   await pool.query('INSERT INTO sesiones (id, usuario_id, fecha_expiracion, ip_origen, user_agent) VALUES (?, ?, ?, ?, ?)', [id, userId, expiresAt, ip || null, userAgent || null]);
 }
-async function findActive(id) {
-  const [rows] = await pool.query('SELECT * FROM sesiones WHERE id = ? AND revocada_en IS NULL AND fecha_expiracion > UTC_TIMESTAMP()', [id]);
+async function findActive(id, idleMinutes = Number(process.env.IDLE_TIMEOUT_MINUTES || 10)) {
+  const [rows] = await pool.query('SELECT * FROM sesiones WHERE id = ? AND revocada_en IS NULL AND fecha_expiracion > UTC_TIMESTAMP() AND TIMESTAMPDIFF(SECOND, ultima_actividad, UTC_TIMESTAMP()) < (? * 60)', [id, idleMinutes]);
   return rows[0];
 }
 async function touch(id) { await pool.query('UPDATE sesiones SET ultima_actividad = CURRENT_TIMESTAMP WHERE id = ? AND revocada_en IS NULL', [id]); }
