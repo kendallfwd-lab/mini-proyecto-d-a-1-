@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "commonjs",
-  "scripts": { "dev": "node --watch src/server.js", "start": "node src/server.js", "test": "jest --runInBand" },
-  "dependencies": { "cors": "^2.8.6", "dotenv": "^17.4.2", "express": "^5.2.1", "mysql2": "^3.22.3" },
+  "scripts": { "dev": "node --watch src/server.js", "start": "node src/server.js", "admin:bootstrap": "node scripts/bootstrapAdmin.js", "test": "jest --runInBand" },
+  "dependencies": { "bcryptjs": "^2.4.3", "cors": "^2.8.6", "dotenv": "^17.4.2", "express": "^5.2.1", "express-rate-limit": "^7.5.0", "helmet": "^8.1.0", "jsonwebtoken": "^9.0.2", "mysql2": "^3.22.3" },
   "devDependencies": { "jest": "^29.7.0", "supertest": "^7.1.4" }
 }

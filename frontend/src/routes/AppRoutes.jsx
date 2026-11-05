@@ -1,4 +1,9 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import AppLayout from '../components/layout/AppLayout';
+import PublicOnly from '../components/auth/PublicOnly';
+import RutaProtegida from '../components/auth/RutaProtegida';
+import Login from '../pages/Login';
+import Registro from '../pages/Registro';
 import Categorias from '../pages/Categorias';
 import Dashboard from '../pages/Dashboard';
 import Clientes from '../pages/Clientes';
@@ -10,19 +15,17 @@ import Productos from '../pages/Productos';
 import Proveedores from '../pages/Proveedores';
 import Ventas from '../pages/Ventas';
 
+function PrivateLayout() { return <AppLayout><Outlet /></AppLayout>; }
+
 export default function AppRoutes() {
-  return (
-    <Routes>
-      <Route path="/" element={<Dashboard />} />
-      <Route path="/productos" element={<Productos />} />
-      <Route path="/categorias" element={<Categorias />} />
-      <Route path="/proveedores" element={<Proveedores />} />
-      <Route path="/compras" element={<Compras />} />
-      <Route path="/clientes" element={<Clientes />} />
-      <Route path="/ventas" element={<Ventas />} />
-      <Route path="/facturas" element={<Facturas />} />
-      <Route path="/gastos" element={<Gastos />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
+  return <Routes>
+    <Route element={<PublicOnly />}><Route path="/login" element={<Login />} /><Route path="/registro" element={<Registro />} /></Route>
+    <Route element={<RutaProtegida />}><Route element={<PrivateLayout />}>
+      <Route path="/" element={<Navigate to="/dashboard" replace />} /><Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/productos" element={<Productos />} /><Route path="/categorias" element={<Categorias />} /><Route path="/proveedores" element={<Proveedores />} />
+      <Route path="/compras" element={<Compras />} /><Route path="/clientes" element={<Clientes />} /><Route path="/ventas" element={<Ventas />} />
+      <Route path="/facturas" element={<Facturas />} /><Route path="/gastos" element={<Gastos />} />
+    </Route></Route>
+    <Route path="*" element={<NotFound />} />
+  </Routes>;
 }

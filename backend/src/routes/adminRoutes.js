@@ -1,0 +1,11 @@
+const router = require('express').Router();
+const controller = require('../controllers/adminController');
+const auth = require('../middleware/authMiddleware');
+const principal = require('../middleware/principalMiddleware');
+const validateAdmin = require('../validators/adminValidator');
+const { validateRequest, validateIdParam } = require('../middleware/validateRequest');
+router.use(auth, principal);
+router.get('/usuarios', controller.list);
+router.post('/usuarios', validateRequest(validateAdmin), controller.create);
+router.patch('/usuarios/:id/desactivar', validateIdParam, controller.deactivate);
+module.exports = router;

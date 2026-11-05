@@ -1,0 +1,21 @@
+{
+  "info": { "name": "Mini Proyecto 1 - Día 2", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
+  "variable": [{ "key": "baseUrl", "value": "http://localhost:3010/api" }, { "key": "token", "value": "" }],
+  "item": [
+    { "name": "Auth", "item": [
+      { "name": "Register", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nombre\": \"Usuario Postman\",\n  \"correo\": \"usuario-postman@example.com\",\n  \"password\": \"Segura123!\"\n}" }, "url": "{{baseUrl}}/auth/register" } },
+      { "name": "Login (captura token)", "event": [{ "listen": "test", "script": { "exec": ["const json = pm.response.json();", "if (json.data?.token) pm.collectionVariables.set('token', json.data.token);"] } }], "request": { "method": "POST", "body": { "mode": "raw", "raw": "{\n  \"correo\": \"usuario-postman@example.com\",\n  \"password\": \"Segura123!\"\n}" }, "url": "{{baseUrl}}/auth/login" } },
+      { "name": "Me", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/auth/me" } },
+      { "name": "Acceso sin token", "request": { "method": "GET", "url": "{{baseUrl}}/productos" } }
+    ] },
+    { "name": "CRUD Productos", "item": [
+      { "name": "Listar", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/productos" } },
+      { "name": "Crear", "request": { "method": "POST", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "body": { "mode": "raw", "raw": "{\n  \"codigo\": \"QA-001\",\n  \"nombre\": \"Producto de prueba\",\n  \"precio\": 1000,\n  \"stock\": 5,\n  \"categoria_id\": 1,\n  \"proveedor_id\": 1\n}" }, "url": "{{baseUrl}}/productos" } },
+      { "name": "Consultar por ID", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/productos/1" } },
+      { "name": "Actualizar", "request": { "method": "PUT", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "body": { "mode": "raw", "raw": "{\n  \"codigo\": \"QA-001\",\n  \"nombre\": \"Producto actualizado\",\n  \"precio\": 1200,\n  \"stock\": 8,\n  \"categoria_id\": 1,\n  \"proveedor_id\": 1\n}" }, "url": "{{baseUrl}}/productos/1" } },
+      { "name": "Eliminar", "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/productos/1" } }
+    ] },
+    { "name": "CRUD Categorías", "item": [{ "name": "Listar", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/categorias" } }] },
+    { "name": "CRUD Proveedores", "item": [{ "name": "Listar", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{baseUrl}}/proveedores" } }] }
+  ]
+}

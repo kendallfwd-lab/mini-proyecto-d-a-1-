@@ -1,0 +1,5 @@
+import logo from '../../assets/logo-dropzone.png';
+
+export default function AuthShell({ title, subtitle, children, footer }) {
+  return <main className="auth-page"><section className="auth-hero"><div className="auth-brand"><img src={logo} alt="Drop_Zone CR"/><span><b>Drop_Zone</b><small>Inventario CR</small></span></div><div className="auth-hero-copy"><p className="auth-kicker">GESTIÓN SIMPLE · RESULTADOS REALES</p><h2>Tu tienda, organizada en un solo lugar.</h2><p>Controla productos, compras, ventas y analíticas desde un panel claro y profesional.</p><div className="auth-points"><span>✓ Inventario actualizado</span><span>✓ Ventas y rentabilidad</span><span>✓ Datos protegidos</span></div></div><small className="auth-location">El Roble · Puntarenas · Costa Rica</small></section><section className="auth-card"><div className="auth-card-head"><p className="eyebrow">DROP_ZONE CR · INVENTARIO</p><h1>{title}</h1><p className="muted">{subtitle}</p></div>{children}<p className="auth-link">{footer}</p></section></main>;
+}

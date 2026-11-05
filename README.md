@@ -80,3 +80,8 @@ frontend/
 database/           Migración, esquema, datos y verificación
 docs/               Modelo, endpoints, pruebas y diagrama ER
 ```
+## Autenticación del Día 2
+
+Ejecuta `database/migrations/005_usuarios_auth.sql` después de las migraciones existentes. Copia `backend/.env.example` a `backend/.env` y reemplaza `JWT_SECRET` por una cadena aleatoria de al menos 32 caracteres. Las rutas empresariales requieren JWT; registro y login son públicos. El token se conserva solo en memoria en React.
+
+La colección de Postman está en `postman/MiniProyecto1_Dia2.postman_collection.json` y la investigación de seguridad en `docs/investigacion-jwt.md`.
