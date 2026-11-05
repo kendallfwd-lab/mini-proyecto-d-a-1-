@@ -1,5 +1,6 @@
 const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 function validateRegister(body) { const errors = []; if (!body.nombre || String(body.nombre).trim().length < 2) errors.push('nombre es obligatorio'); if (!body.correo || !email.test(String(body.correo).trim())) errors.push('correo no es válido'); if (!body.password || String(body.password).length < 8) errors.push('password debe tener al menos 8 caracteres'); return errors; }
 function validateLogin(body) { const errors = []; if (!body.correo || !email.test(String(body.correo).trim())) errors.push('correo no es válido'); if (!body.password) errors.push('password es obligatorio'); if (body.mfa_code !== undefined && !/^\d{6}$/.test(String(body.mfa_code))) errors.push('mfa_code debe tener 6 dígitos'); return errors; }
+function validateEmailCodeRequest(body) { const errors = []; if (!body.correo || !email.test(String(body.correo).trim())) errors.push('correo no es válido'); if (!body.password) errors.push('password es obligatorio'); return errors; }
 function validateChangePassword(body) { const errors = []; if (!body.currentPassword) errors.push('currentPassword es obligatorio'); if (!body.newPassword || String(body.newPassword).length < 12 || String(body.newPassword).length > 72) errors.push('newPassword debe tener entre 12 y 72 caracteres'); return errors; }
-module.exports = { validateRegister, validateLogin, validateChangePassword };
+module.exports = { validateRegister, validateLogin, validateEmailCodeRequest, validateChangePassword };

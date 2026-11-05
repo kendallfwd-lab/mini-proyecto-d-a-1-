@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS email_mfa_codes (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  usuario_id BIGINT UNSIGNED NOT NULL,
+  codigo_hash BINARY(32) NOT NULL,
+  expira_en DATETIME NOT NULL,
+  intentos TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  usado_en DATETIME NULL,
+  creado_en TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_email_mfa_user (usuario_id, creado_en),
+  CONSTRAINT fk_email_mfa_user FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+) ENGINE=InnoDB;

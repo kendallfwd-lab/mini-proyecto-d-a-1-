@@ -6,6 +6,8 @@ const model = require('../models/usuarioModel');
 const sessionModel = require('../models/sessionModel');
 const auditModel = require('../models/auditModel');
 const throttleModel = require('../models/loginThrottleModel');
+const emailCodeModel = require('../models/emailCodeModel');
+const mailService = require('../services/mailService');
 const totp = require('../services/totpService');
 const { mode, refreshMs, randomId, randomToken, hashToken, setSessionCookies, clearSessionCookies, parseCookies, refreshCookieName } = require('../config/session');
 
@@ -21,11 +23,23 @@ exports.login = asyncHandler(async (req, res) => {
   const validPassword = user && user.activo && await bcrypt.compare(req.body.password, user.password_hash);
   if (!validPassword) { await throttleModel.failure(correo); await auditModel.record({ action: 'login', entity: 'usuarios', result: 'fallido', metadata: { motivo: 'credenciales_invalidas' } }).catch(() => {}); throw httpError(401, 'Correo o contraseña incorrectos'); }
   if (user.es_principal && !user.mfa_enabled) throw httpError(403, 'El administrador principal debe configurar MFA antes de iniciar sesión');
-  if (user.es_principal) { if (!req.body.mfa_code || !totp.verifyCode(totp.decryptSecret(user), req.body.mfa_code)) { await throttleModel.failure(correo); throw httpError(401, 'Código MFA inválido'); } }
+  if (user.es_principal) { const code = req.body.mfa_code; const validTotp = code && totp.verifyCode(totp.decryptSecret(user), code); const validEmail = code && !validTotp && await emailCodeModel.consume(user.id, code); if (!validTotp && !validEmail) { await throttleModel.failure(correo); throw httpError(401, 'Código MFA inválido'); } }
   await throttleModel.success(correo);
   const session = await issueSession(user, req); await auditModel.record({ userId: user.id, action: 'login', entity: 'usuarios', recordId: user.id, metadata: { modo: mode } }).catch(() => {});
   if (mode === 'cookie') { setSessionCookies(res, session); return res.json({ success: true, data: { user: publicUser(user) } }); }
   res.json({ success: true, data: { user: publicUser(user), token: session.accessToken } });
+});
+
+exports.requestEmailCode = asyncHandler(async (req, res) => {
+  const correo = normalize(req.body.correo);
+  if (await throttleModel.status(correo)) throw httpError(429, 'Demasiados intentos. Intente de nuevo más tarde.');
+  const user = await model.findByEmail(correo);
+  const valid = user && user.activo && user.es_principal && await bcrypt.compare(req.body.password, user.password_hash);
+  if (!valid) { await throttleModel.failure(correo); throw httpError(401, 'Correo o contraseña incorrectos'); }
+  const code = String(Math.floor(100000 + Math.random() * 900000));
+  await emailCodeModel.create(user.id, code);
+  await mailService.sendLoginCode(user.correo, code);
+  res.json({ success: true, data: { sent: true } });
 });
 
 exports.refresh = asyncHandler(async (req, res) => {

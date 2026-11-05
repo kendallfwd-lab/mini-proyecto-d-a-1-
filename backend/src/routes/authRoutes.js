@@ -3,9 +3,10 @@ const controller = require('../controllers/authController');
 const auth = require('../middleware/authMiddleware');
 const csrf = require('../middleware/csrfMiddleware');
 const { validateRequest } = require('../middleware/validateRequest');
-const { validateLogin, validateChangePassword } = require('../validators/authValidator');
+const { validateLogin, validateEmailCodeRequest, validateChangePassword } = require('../validators/authValidator');
 
 router.post('/login', validateRequest(validateLogin), controller.login);
+router.post('/mfa/email-code', validateRequest(validateEmailCodeRequest), controller.requestEmailCode);
 router.post('/refresh', csrf.refresh, controller.refresh);
 router.get('/me', auth, controller.me);
 router.post('/change-password', auth, csrf, validateRequest(validateChangePassword), controller.changePassword);

@@ -3,7 +3,35 @@
   "version": "1.0.0",
   "private": true,
   "type": "commonjs",
-  "scripts": { "dev": "node --watch src/server.js", "start": "node src/server.js", "admin:bootstrap": "node scripts/bootstrapAdmin.js", "admin:mfa:setup": "node scripts/setupMfa.js", "admin:mfa:rotate": "node scripts/rotateMfa.js", "admin:password:change": "node scripts/changeAdminPassword.js", "db:migrate:security": "node scripts/migrate.js 007_security_sessions_audit.sql", "db:migrate:mfa": "node scripts/migrate.js 008_mfa_login_throttle.sql", "db:provision-user": "node scripts/provisionDbUser.js", "db:backup": "node scripts/backupDatabase.js", "test": "jest --runInBand" },
-  "dependencies": { "bcryptjs": "^2.4.3", "cors": "^2.8.6", "dotenv": "^17.4.2", "express": "^5.2.1", "express-rate-limit": "^7.5.0", "helmet": "^8.1.0", "jsonwebtoken": "^9.0.2", "mysql2": "^3.22.3" },
-  "devDependencies": { "jest": "^29.7.0", "supertest": "^7.1.4" }
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "admin:bootstrap": "node scripts/bootstrapAdmin.js",
+    "admin:mfa:setup": "node scripts/setupMfa.js",
+    "admin:mfa:rotate": "node scripts/rotateMfa.js",
+    "admin:password:change": "node scripts/changeAdminPassword.js",
+    "admin:mail:test": "node scripts/testMail.js",
+    "admin:mail:configure": "node scripts/configureMail.js",
+    "db:migrate:security": "node scripts/migrate.js 007_security_sessions_audit.sql",
+    "db:migrate:mfa": "node scripts/migrate.js 008_mfa_login_throttle.sql",
+    "db:migrate:email-mfa": "node scripts/migrate.js 009_email_mfa_codes.sql",
+    "db:provision-user": "node scripts/provisionDbUser.js",
+    "db:backup": "node scripts/backupDatabase.js",
+    "test": "jest --runInBand"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.22.3",
+    "nodemailer": "^10.3.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.1.4"
+  }
 }
