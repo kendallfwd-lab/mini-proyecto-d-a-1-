@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const crypto = require('node:crypto');
 const { sign, signCsrf } = require('../config/jwt');
 const asyncHandler = require('../utils/asyncHandler');
 const httpError = require('../utils/httpError');
@@ -36,7 +37,7 @@ exports.requestEmailCode = asyncHandler(async (req, res) => {
   const user = await model.findByEmail(correo);
   const valid = user && user.activo && user.es_principal && await bcrypt.compare(req.body.password, user.password_hash);
   if (!valid) { await throttleModel.failure(correo); throw httpError(401, 'Correo o contraseña incorrectos'); }
-  const code = String(Math.floor(100000 + Math.random() * 900000));
+  const code = String(crypto.randomInt(100000, 1000000));
   await emailCodeModel.create(user.id, code);
   await mailService.sendLoginCode(user.correo, code);
   res.json({ success: true, data: { sent: true } });
