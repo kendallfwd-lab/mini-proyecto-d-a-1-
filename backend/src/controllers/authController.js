@@ -39,7 +39,7 @@ exports.requestEmailCode = asyncHandler(async (req, res) => {
   if (!valid) { await throttleModel.failure(correo); throw httpError(401, 'Correo o contraseña incorrectos'); }
   const code = String(crypto.randomInt(100000, 1000000));
   await emailCodeModel.create(user.id, code);
-  await mailService.sendLoginCode(user.correo, code);
+  try { await mailService.sendLoginCode(user.correo, code); } catch (error) { await auditModel.record({ userId: user.id, action: 'email_mfa_send', entity: 'usuarios', result: 'fallido', metadata: { motivo: 'smtp_no_disponible' } }).catch(() => {}); throw httpError(503, 'No se pudo conectar con el servicio de correo. Verifique la red SMTP o configure un proveedor por API.'); }
   res.json({ success: true, data: { sent: true } });
 });
 

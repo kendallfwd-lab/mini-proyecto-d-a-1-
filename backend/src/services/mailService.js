@@ -11,7 +11,10 @@ function transporter() {
     host: required('MAIL_HOST'),
     port: Number(process.env.MAIL_PORT || 465),
     secure: String(process.env.MAIL_SECURE || 'true') === 'true',
-    auth: { user: required('MAIL_USER'), pass: required('MAIL_PASSWORD') }
+    auth: { user: required('MAIL_USER'), pass: required('MAIL_PASSWORD') },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000
   });
 }
 
