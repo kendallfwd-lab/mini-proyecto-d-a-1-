@@ -15,6 +15,9 @@ app.use(helmet({ hsts: { maxAge: 31536000, includeSubDomains: true, preload: tru
 app.use((req, res, next) => { if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') return res.status(426).json({ success: false, error: 'HTTPS requerido' }); next(); });
 app.use(express.json({ limit: '100kb' }));
 
+app.get('/', (req, res) => {
+  res.json({ success: true, data: { service: 'business-inventory-api', status: 'ok', health: '/api/health', frontend: 'http://localhost:5173' } });
+});
 app.get('/api/health', (req, res) => {
   res.json({ success: true, data: { status: 'ok', service: 'business-inventory-api' } });
 });
