@@ -42,12 +42,12 @@ export default function Login() {
 
   return <AuthShell title="Iniciar sesión" subtitle="Accede a tu panel de inventario." footer={<>Acceso privado para administradores autorizados.</>}>
     <ErrorMessage error={error} />
-    <form className="auth-form" onSubmit={submit}>
+    <form className="auth-form" autoComplete="off" onSubmit={submit}>
       <label>Correo
-        <input type="email" autoComplete="email" placeholder="tu@correo.com" required value={form.correo} onChange={(event) => setForm({ ...form, correo: event.target.value })} />
+        <input type="email" autoComplete="off" placeholder="tu@correo.com" required value={form.correo} onChange={(event) => setForm({ ...form, correo: event.target.value })} />
       </label>
       <label>Contraseña
-        <input type="password" autoComplete="current-password" placeholder="••••••••" required value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} />
+        <input type="password" autoComplete="new-password" placeholder="••••••••" required value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} />
       </label>
       {notice && <div className="feedback success">{notice}</div>}
       <label>Código MFA <small>(administrador principal)</small>
